@@ -8,14 +8,32 @@ public delegate void HighscoreEvent();
 
 public struct Highscore
 {
-    public Highscore(string name, int score)
+    private int m_Position;
+    public int Position
     {
-        this.name = name;
-        this.score = score;
+        get { return m_Position; }
     }
 
-    public string name;
-    public int score; //Can also be time in ms
+    private string m_OwnerName;
+    public string Name
+    {
+        get { return m_OwnerName; }
+    }
+
+    //Can also be time in ms
+    private int m_Score;
+    public int Score
+    {
+        get { return m_Score; }
+    }
+    
+
+    public Highscore(int position, string name, int score)
+    {
+        m_Position = position;
+        m_OwnerName = name;
+        m_Score = score;
+    }
 }
 
 public class HighscoreSystem : MonoBehaviour
@@ -51,7 +69,7 @@ public class HighscoreSystem : MonoBehaviour
     }
 
 
-    public void PostHighscore(string name, string email, int score)
+    public void PostHighscore(string name, int score)
     {
         StartCoroutine(PostHighscoreRoutine(name, score));
     }
@@ -67,7 +85,7 @@ public class HighscoreSystem : MonoBehaviour
         //Change to map?
         for (int i = 0; i < m_Highscores.Count; ++i)
         {
-            if (m_Highscores[i].name == name)
+            if (m_Highscores[i].Name == name)
             {
                 return i;
             }
@@ -81,13 +99,13 @@ public class HighscoreSystem : MonoBehaviour
         //Change to map?
         foreach (Highscore highscore in m_Highscores)
         {
-            if (highscore.name == name)
+            if (highscore.Name == name)
             {
                 return highscore;
             }
         }
 
-        return new Highscore("Empty", 0);
+        return new Highscore(0, "Empty", 0);
     }
 
     public Highscore GetHighscore(int highscoreID)
@@ -97,7 +115,7 @@ public class HighscoreSystem : MonoBehaviour
             return m_Highscores[highscoreID];
         }
 
-        return new Highscore("Empty", 0);
+        return new Highscore(0, "Empty", 0);
     }
 
 
@@ -147,17 +165,28 @@ public class HighscoreSystem : MonoBehaviour
             string[] words = highscoreGet.text.Split(delimiterChars);
 
             m_Highscores.Clear();
-            for (int i = 0; i < words.Length; i += 2)
+            for (int i = 0; i < words.Length; i += 3)
             {
                 if (String.IsNullOrEmpty(words[i]))
                     continue;
 
-                Highscore highscore = new Highscore();
-                highscore.name = words[i];
-                bool success = int.TryParse(words[i + 1], out highscore.score);
+                //Get the position
+                int position = 0;
+                bool posParseSuccess = int.TryParse(words[i], out position);
 
-                if (success)
+                //Get the name
+                string name = words[i + 1];
+
+                //Get the score
+                int score = 0;
+                bool scoreParseSuccess = int.TryParse(words[i + 2], out score);
+
+                //Add it to the list
+                if (posParseSuccess && scoreParseSuccess)
+                {
+                    Highscore highscore = new Highscore(position, name, score);
                     m_Highscores.Add(highscore);
+                }
             }
 
             if (HighscoreUpdateEvent != null)

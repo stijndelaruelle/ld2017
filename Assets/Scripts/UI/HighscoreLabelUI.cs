@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public class HighscoreLabelUI : MonoBehaviour
 {
     [SerializeField]
+    private Text m_PositionLabel;
+
+    [SerializeField]
     private Text m_NameLabel;
 
     [SerializeField]
@@ -17,11 +20,12 @@ public class HighscoreLabelUI : MonoBehaviour
 
     public void UpdateScore(Highscore highScore)
     {
-        UpdateScore(highScore.name, highScore.score);
+        UpdateScore(highScore.Position, highScore.Name, highScore.Score);
     }
 
-    public void UpdateScore(string name, int score)
+    public void UpdateScore(int position, string name, int score)
     {
+        m_PositionLabel.text = position.ToString();
         m_NameLabel.text = name;
 
         if (m_DisplayScoreAsTime)

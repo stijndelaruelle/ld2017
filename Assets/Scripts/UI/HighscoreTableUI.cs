@@ -13,6 +13,8 @@ public class HighscoreTableUI : MonoBehaviour
     private HighscoreLabelUI m_HighscoreLabelUIPrefab;
     private List<HighscoreLabelUI> m_HighscoreLabels;
 
+    private int m_CurrentNumberOfHighscores = 0;
+
     private void Awake()
     {
         m_HighscoreLabels = new List<HighscoreLabelUI>();
@@ -78,9 +80,11 @@ public class HighscoreTableUI : MonoBehaviour
     //Callbacks
     private void OnHighscoresUpdated()
     {
-        int numberOfHighscores = m_HighscoreSystem.GetNumberOfHighscores;
+        HideScores();
 
-        for (int i = 0; i < numberOfHighscores; ++i)
+        m_CurrentNumberOfHighscores = m_HighscoreSystem.GetNumberOfHighscores;
+
+        for (int i = 0; i < m_CurrentNumberOfHighscores; ++i)
         {
             if (i >= m_HighscoreLabels.Count)
             {
@@ -134,6 +138,11 @@ public class HighscoreTableUI : MonoBehaviour
     {
         for (int i = 0; i < transform.childCount; ++i)
         {
+            if (state == true && i >= m_CurrentNumberOfHighscores)
+            {
+                return;
+            }
+
             transform.GetChild(i).gameObject.SetActive(state);
         }
     }
